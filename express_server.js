@@ -24,6 +24,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//GET ROUTES
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -38,13 +39,6 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 })
 
-app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body["longURL"]
-
-  res.redirect(`/urls/${shortURL}`);
-  
-});
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
@@ -58,6 +52,21 @@ app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params["shortURL"]];
   res.redirect(longURL);
 })
+
+//POST ROUTES
+app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body["longURL"]
+
+  res.redirect(`/urls/${shortURL}`);
+  
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL]
+  res.redirect("/urls");
+});
+
 
   // app.get("/hello", (req, res) => {
   //   res.send("<html><body>Hello <b>World</b></body></html>\n");
