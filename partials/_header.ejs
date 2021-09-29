@@ -16,9 +16,6 @@
           <span>You are logged in with <%= user.email %> &nbsp;&nbsp;</span>
           <button type="submit" class="btn btn-danger">logout</button>
         </form> 
-        <form class = "form-inline" method=POST action="/register">
-          <button type="submit" class="btn btn-primary">register</button>
-        </form> 
       <% } else { %>
         <form class="form-inline" method=GET action="/urls/login">
           <button type="submit" class="btn btn-primary">login</button>

@@ -46,8 +46,8 @@ const verifyUnusedEmail = function(emailAddress) {
     if (user.email === emailAddress) {
       return false;
     }
-    return true;
   }
+  return true;
 };
 
 //GET ROUTES
@@ -144,13 +144,14 @@ app.post("/register", (req, res) => {
   const password = req.body.password
   const email = req.body.email
   userID = generateRandomString();
-
+  
   //check if email or password are empty
   if(!password || !email) {
     return res.status(400).send("Email or password are missing");
   }
 
   //check if the email already exists
+  
   if (!verifyUnusedEmail(email)) {
     return res.status(400).send("Email already exists");
   }
@@ -162,7 +163,7 @@ app.post("/register", (req, res) => {
   };
 
   res.cookie("user_id", userID);
-  console.log
+  console.log(users)
   res.redirect("/urls");
 });
 
