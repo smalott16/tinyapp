@@ -39,15 +39,15 @@ const generateRandomString = function () {
   return randomIDArray.join("");
 }
 
-const verifyUnusedEmail = function(emailAddress) {
+const findUserByEmail = function(emailAddress) {
   let user
   for (let userID in users) {
     user = users[userID]
     if (user.email === emailAddress) {
-      return false;
+      return user;
     }
   }
-  return true;
+  return null;
 };
 
 //GET ROUTES
@@ -131,7 +131,25 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie ('user_id', req.body["user_id"]);
+  const password = req.body.password
+  const email = req.body.email
+
+  if(!password || !email) {
+    return res.status(400).send("Email or password are missing");
+  }
+
+  const user = findUserByEmail(email)
+
+  //if user can't be found
+  if(!findUserByEmail(email)) {
+    return res.status(403).send("There are no users matching that email address");
+  }
+  //if email exists, check password to see if it is right
+  if(user.password !== password) {
+    return res.status(403).send("The password is incorrect");
+  }
+  console.log(req.body)
+  res.cookie ('user_id', user.id);
   res.redirect("/urls")
 });
 
@@ -152,7 +170,7 @@ app.post("/register", (req, res) => {
 
   //check if the email already exists
   
-  if (!verifyUnusedEmail(email)) {
+  if (findUserByEmail(email)) {
     return res.status(400).send("Email already exists");
   }
 
