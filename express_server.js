@@ -48,7 +48,7 @@ const verifyUnusedEmail = function(emailAddress) {
     }
     return true;
   }
-}
+};
 
 //GET ROUTES
 app.get("/", (req, res) => {
@@ -73,16 +73,25 @@ app.get("/urls/new", (req, res) => {
     selectedUser: user
   }
   res.render("urls_new", templateVars);
-})
+});
 
 app.get("/urls/register", (req, res) => {
-  const userID = req.cookies['user_id']
+  const userID = req.cookies['user_id'];
   const user = users[userID];
   const templateVars = {
     selectedUser: user
   }
   res.render("urls_register", templateVars);
-})
+});
+
+app.get("/urls/login", (req, res) => {
+  const userID = req.cookies['user_id'];
+  const user = users[userID];
+  const templateVars = {
+    selectedUser: user
+  }
+  res.render("urls_login", templateVars);
+});
 
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.cookies['user_id'];
@@ -94,12 +103,12 @@ app.get("/urls/:shortURL", (req, res) => {
   }
   //console.log(templateVars);
   res.render("urls_show", templateVars);
-})
+});
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params["shortURL"]];
   res.redirect(longURL);
-})
+});
 
 //POST ROUTES
 app.post("/urls", (req, res) => {
