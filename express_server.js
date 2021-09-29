@@ -81,6 +81,9 @@ app.get("/urls/register", (req, res) => {
   const templateVars = {
     selectedUser: user
   }
+  if (userID) {
+    return res.redirect("/urls");
+  }
   res.render("urls_register", templateVars);
 });
 
@@ -89,6 +92,9 @@ app.get("/urls/login", (req, res) => {
   const user = users[userID];
   const templateVars = {
     selectedUser: user
+  }
+  if (userID) {
+    return res.redirect("/urls");
   }
   res.render("urls_login", templateVars);
 });
