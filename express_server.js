@@ -8,8 +8,28 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.set("view engine", "ejs");
-///////////////////////////////////////////////////////
 
+
+//GLOBAL VARIABLES
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
+
+//FUNCTIONS
 const generateRandomString = function () {
   const charactersForString = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   let randomIDArray = [];
@@ -18,11 +38,6 @@ const generateRandomString = function () {
   }
   return randomIDArray.join("");
 }
-
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
 
 //GET ROUTES
 app.get("/", (req, res) => {
@@ -101,6 +116,22 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls")
+});
+
+app.post("/register", (req, res) => {
+  const password = req.body.password
+  const email = req.body.email
+  userID = generateRandomString();
+
+  users[userID] = {
+    id: userID,
+    email: email,
+    password: password
+  };
+
+  res.cookie("user_id", userID);
+  console.log(users)
+  res.redirect("/urls");
 });
 
 
