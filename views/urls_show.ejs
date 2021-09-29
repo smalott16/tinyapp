@@ -14,13 +14,13 @@
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
       </div>
-      <div class="card-body">
-        <h5 class="card-title">EDIT URL</h5>
-        <form class="form-inline" method=POST action="/urls/<%= shortURL %>/edit">
+      <h5 class="card-title">EDIT URL </h5>
+      <div class="card-body align-items-center d-flex justify-content-center">
+        <form class="form-inline centered" method=POST action="/urls/<%= shortURL %>/edit">
           <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em">
           <button type="submit" class="btn btn-primary">Edit</button>
         </form>
-      </div>
+    </div>
 
     <div class="card-footer text-muted"></div>
   </div>
