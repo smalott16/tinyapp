@@ -107,7 +107,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   const user = users[userID];
   const templateVars = {
     selectedUser: user
@@ -119,7 +119,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/register", (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   const user = users[userID];
   const templateVars = {
     selectedUser: user
@@ -144,7 +144,7 @@ app.get("/urls/login", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   const user = users[userID];
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -169,7 +169,7 @@ app.get("/u/:shortURL", (req, res) => {
 //POST ROUTES
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
 
   //Block this post pathway if there are not logged in users - prevents posting from the command line
   if (!userID) {
@@ -185,7 +185,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   //urlsForUser(req.cookies['user_id']);
   if (!userID) {
     //|| urlsForUser(userID).indexOf(req.params["shortURL"]) === -1
@@ -197,7 +197,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   
   if (!userID) {
     return res.status(401).send("You are not authorized to edit this URL. Please log in to edit your own URLs")
@@ -260,7 +260,8 @@ app.post("/register", (req, res) => {
     password: hashedPassword
   };
 
-  res.cookie("user_id", userID);
+  //res.cookie("user_id", userID);
+  req.session.user_id = userID;
   console.log(users);
   res.redirect("/urls");
 });
