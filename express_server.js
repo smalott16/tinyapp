@@ -2,15 +2,20 @@
 const { request } = require("express");
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const cookieParser = require("cookie-parser");
+//const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session')
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 
 //Middleware
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
 app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({extended: true}));
+//app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 
 //GLOBAL VARIABLES
@@ -81,7 +86,8 @@ app.get("/", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
-  const userID = req.cookies['user_id'];
+  //const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   const user = users[userID];
   const myURL = {};
   if (user) {
@@ -96,6 +102,7 @@ app.get("/urls", (req, res) => {
     selectedUser: user,
     id: userID
   };
+  console.log(templateVars)
   res.render("urls_index", templateVars);
 });
 
@@ -124,7 +131,8 @@ app.get("/urls/register", (req, res) => {
 });
 
 app.get("/urls/login", (req, res) => {
-  const userID = req.cookies['user_id'];
+  //const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   const user = users[userID];
   const templateVars = {
     selectedUser: user
@@ -218,12 +226,14 @@ app.post("/login", (req, res) => {
   if (!bcrypt.compareSync(password, user.password)) {
     return res.status(403).send("The password is incorrect");
   }
-  res.cookie('user_id', user.id);
+  //res.cookie('user_id', user.id);
+  req.session.user_id = user.id;
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  //res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
