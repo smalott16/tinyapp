@@ -1,5 +1,6 @@
 //REQUIRES AND SETS////////////////////////////////////
 const { request } = require("express");
+const { generateRandomString, findUserByEmail, urlsForUser} = require("./helpers")
 const express = require("express");
 const bcrypt = require("bcryptjs");
 //const cookieParser = require("cookie-parser");
@@ -42,41 +43,6 @@ const users = {
     email: "2@2.com",
     password: "$2a$10$1La/.trT9wIGzxNbbfXaL.QTsPe8DRiChHoDkfumj7RhnUXlFpK6y" 
   }
-};
-
-//FUNCTIONS
-const generateRandomString = function() {
-  const charactersForString = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  let randomIDArray = [];
-  for (let i = 1; i <= 6; i++) {
-    randomIDArray.push(charactersForString[Math.floor(Math.random() * (charactersForString.length - 1))]);
-  }
-  return randomIDArray.join("");
-};
-
-const findUserByEmail = function(emailAddress) {
-  let user;
-  for (let userID in users) {
-    user = users[userID];
-    if (user.email === emailAddress) {
-      return user;
-    }
-  }
-  return null;
-};
-
-const urlsForUser = function(id) {
-///this may be a useful function to refactor code to
-///a function that returns the urls associated with a particular user
-///this a smarter way than how I did it.
-console.log(id)
-const userURLs = [];
-for (let shortURL in urlDatabase) {
-  if (shortURL.userID === id ) {
-    userURLs.push(shortURL);
-  }
-  return userURLs;
-}
 };
 
 //GET ROUTES
@@ -216,10 +182,10 @@ app.post("/login", (req, res) => {
     return res.status(400).send("Email or password are missing");
   }
 
-  const user = findUserByEmail(email);
+  const user = findUserByEmail(email, users);
 
   //if user can't be found
-  if (!findUserByEmail(email)) {
+  if (!user) {
     return res.status(403).send("There are no users matching that email address");
   }
   //if email exists, check password to see if it is right
