@@ -40,6 +40,12 @@
             <% } %>
           </tr>
         <% } %>
+        <tr>
+          <% if(id === undefined) { %>
+            <h3>No URLs. Please Log in to see URLs. </h3>
+          <% } %> 
+        </tr>
+        
       </tbody>
     </table>
   </main>

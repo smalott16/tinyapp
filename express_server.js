@@ -75,7 +75,8 @@ app.get("/urls", (req, res) => {
   }
   const templateVars = {
     urls: myURL,
-    selectedUser: user
+    selectedUser: user,
+    id: userID
   };
   res.render("urls_index", templateVars);
 });
