@@ -72,6 +72,9 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     selectedUser: user
   }
+  if (!userID) {
+    return res.redirect("/urls/login");
+  }
   res.render("urls_new", templateVars);
 });
 
@@ -107,7 +110,7 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL],
     selectedUser: user 
   }
-  //console.log(templateVars);
+  
   res.render("urls_show", templateVars);
 });
 
@@ -119,8 +122,14 @@ app.get("/u/:shortURL", (req, res) => {
 //POST ROUTES
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body["longURL"]
+  const userID = req.cookies['user_id'];
 
+  //Block this post pathway if there are not logged in users - prevents posting from the command line
+  if (!userID) {
+    return res.redirect("/urls/login");
+  }
+
+  urlDatabase[shortURL] = req.body["longURL"]
   res.redirect(`/urls/${shortURL}`);
   
 });
