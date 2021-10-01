@@ -19,14 +19,10 @@ const findUserByEmail = function(emailAddress, database) {
   return undefined;
 };
 
-const urlsForUser = function(id) {
-///this may be a useful function to refactor code to
-///a function that returns the urls associated with a particular user
-///this a smarter way than how I did it.
-  console.log(id)
+const urlsForUser = function(id, database) {
   const userURLs = [];
-  for (let shortURL in urlDatabase) {
-    if (shortURL.userID === id ) {
+  for (let shortURL in database) {
+    if (database[shortURL].userID === id ) {
       userURLs.push(shortURL);
     }
   }

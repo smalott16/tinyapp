@@ -1,4 +1,4 @@
-const { findUserByEmail } = require("../helpers");
+const { findUserByEmail, urlsForUser } = require("../helpers");
 const { assert } = require("chai")
 
 const users = {
@@ -11,6 +11,17 @@ const users = {
     id: "user2",
     email: "2@2.com",
     password: "$2a$10$1La/.trT9wIGzxNbbfXaL.QTsPe8DRiChHoDkfumj7RhnUXlFpK6y" 
+  }
+};
+
+const urlDatabase = {
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "user1"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2"
   }
 };
 
@@ -28,5 +39,14 @@ describe("#findUserByEmail", () => {
 
     assert.equal(actualObject, undefined);
   })
+
+});
+
+describe("#urlsForUser", () => {
+
+  it("it should return an array of short urls associated with a given user id", () => {
+    const urls = urlsForUser("user1", urlDatabase)
+    assert.deepEqual(urls, ["b2xVn2"]);
+  });
 
 });

@@ -47,9 +47,12 @@ const users = {
 
 //GET ROUTES
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const userID = req.session.user_id;
+  if(userID) {
+    return res.redirect("/urls")
+  }
+  res.redirect("/login")
 });
-
 
 app.get("/urls", (req, res) => {
   //const userID = req.cookies['user_id'];
@@ -79,12 +82,12 @@ app.get("/urls/new", (req, res) => {
     selectedUser: user
   };
   if (!userID) {
-    return res.redirect("/urls/login");
+    return res.redirect("/login");
   }
   res.render("urls_new", templateVars);
 });
 
-app.get("/urls/register", (req, res) => {
+app.get("/register", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
   const templateVars = {
@@ -96,7 +99,7 @@ app.get("/urls/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-app.get("/urls/login", (req, res) => {
+app.get("/login", (req, res) => {
   //const userID = req.cookies['user_id'];
   const userID = req.session.user_id;
   const user = users[userID];
@@ -111,10 +114,24 @@ app.get("/urls/login", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
+  const shortURL = req.params.shortURL
+  const usersURLs = urlsForUser(userID, urlDatabase)
+  
+  //check if the short url doesnt exists for the user but the user is logged in
+  if(usersURLs.indexOf(shortURL) === -1 && userID) {
+    console.log("here")
+    return res.status(404).render("urls_error");
+  }
+
+  //if youre not logged in and you enter an invalid short url
+  if(!userID) {
+    return res.status(401).render("urls_error")
+  }
+  
   const user = users[userID];
   const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
+    shortURL: shortURL, //req.params.shortURL,
+    longURL: urlDatabase[shortURL].longURL,
     selectedUser: user
   };
   
@@ -124,7 +141,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   if (!urlDatabase[shortURL]) {
-    return res.redirect("/urls/login");
+    return res.status(404).render("urls_error");
   }
   const longURL = urlDatabase[shortURL].longURL;
   
@@ -139,7 +156,7 @@ app.post("/urls", (req, res) => {
 
   //Block this post pathway if there are not logged in users - prevents posting from the command line
   if (!userID) {
-    return res.redirect("/urls/login");
+    return res.redirect("/login");
   }
 
   urlDatabase[shortURL] = {
@@ -152,17 +169,24 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const userID = req.session.user_id;
-  //urlsForUser(req.cookies['user_id']);
+  const shortURL = req.params.shortURL
+  
+  //if user is logged in but they don't own the url go to error page
+  const usersURLs = urlsForUser(userID, urlDatabase)
+  if(usersURLs.indexOf(shortURL) === -1 && userID) {
+    console.log("here")
+    return res.status(401).render("urls_error");
+  }
+  //if the user id does not exist
   if (!userID) {
-    //|| urlsForUser(userID).indexOf(req.params["shortURL"]) === -1
-    return res.status(401).send("You are not authorized to edit this URL. Please log in to edit your own URLs")
+    return res.status(401).render("urls_error");
     //return res.redirect("/urls/login");
   }
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.post("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
   
   if (!userID) {
@@ -179,18 +203,18 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
 
   if (!password || !email) {
-    return res.status(400).send("Email or password are missing");
+    return res.status(400).render("urls_login_error");
   }
 
   const user = findUserByEmail(email, users);
 
   //if user can't be found
   if (!user) {
-    return res.status(403).send("There are no users matching that email address");
+    return res.status(403).render("urls_login_error");
   }
   //if email exists, check password to see if it is right
   if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(403).send("The password is incorrect");
+    return res.status(403).render("urls_login_error");
   }
   //res.cookie('user_id', user.id);
   req.session.user_id = user.id;
@@ -212,12 +236,12 @@ app.post("/register", (req, res) => {
 
   //check if email or password are empty
   if (!password || !email) {
-    return res.status(400).send("Email or password are missing");
+    return res.status(400).render("urls_reg_error");
   }
 
   //check if the email already exists
-  if (findUserByEmail(email)) {
-    return res.status(400).send("Email already exists");
+  if (findUserByEmail(email, users)) {
+    return res.status(400).render("urls_email_error");
   }
 
   users[userID] = {
