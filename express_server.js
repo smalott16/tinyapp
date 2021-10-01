@@ -56,6 +56,9 @@ app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
   const myURL = {};
+  
+  //logic if the user is logged in, (i.e. there is a user cookie), make an object for the
+  //currently logged in user that contains all of their associated urls
   if (user) {
     for (let key in urlDatabase) {
       if (urlDatabase[key].userID === user.id) {
@@ -63,6 +66,7 @@ app.get("/urls", (req, res) => {
       }
     }
   }
+
   const templateVars = {
     urls: myURL,
     selectedUser: user,
@@ -78,7 +82,7 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     selectedUser: user
   };
-
+  console.log(userID)
   if (!userID) {
     return res.redirect("/login");
   }

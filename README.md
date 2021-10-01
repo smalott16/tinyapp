@@ -1,6 +1,5 @@
 # TinyApp Project
 
-## Description
 TinyApp is a full stack web applicatio built with Node and Express that allows users to shorten long URLs (a la bit.ly)
 
 Users can create an account, log in and generate a 6 character random URL that can be used to re-direct to a full length url specified by the user. 
